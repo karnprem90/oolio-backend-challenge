@@ -17,19 +17,7 @@ func NewOrderHandler(service domain.OrderService) *OrderHandler {
 	return &OrderHandler{service: service}
 }
 
-func (h *OrderHandler) RegisterRoutes(router *gin.Engine) {
-	router.POST("/order", h.PlaceOrder)
-	router.GET("/order/:id", h.GetOrder)
-	router.GET("/orders", h.ListOrders)
-}
-
 func (h *OrderHandler) PlaceOrder(c *gin.Context) {
-	apiKey := c.GetHeader("api_key")
-	if apiKey != "apitest" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid API key"})
-		return
-	}
-
 	var req struct {
 		Items []struct {
 			ProductID string `json:"productId" binding:"required"`
@@ -68,12 +56,6 @@ func (h *OrderHandler) PlaceOrder(c *gin.Context) {
 
 // GetOrder handles GET /order/:id
 func (h *OrderHandler) GetOrder(c *gin.Context) {
-	apiKey := c.GetHeader("api_key")
-	if apiKey != "apitest" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid API key"})
-		return
-	}
-
 	id := c.Param("id")
 	if id == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "order ID is required"})
@@ -95,12 +77,6 @@ func (h *OrderHandler) GetOrder(c *gin.Context) {
 }
 
 func (h *OrderHandler) ListOrders(c *gin.Context) {
-	apiKey := c.GetHeader("api_key")
-	if apiKey != "apitest" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid API key"})
-		return
-	}
-
 	orders, err := h.service.ListOrders(c.Request.Context())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to list orders"})

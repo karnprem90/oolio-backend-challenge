@@ -16,11 +16,6 @@ func NewProductHandler(service domain.ProductService) *ProductHandler {
 	return &ProductHandler{service: service}
 }
 
-func (h *ProductHandler) RegisterRoutes(router *gin.Engine) {
-	router.GET("/product", h.ListProducts)
-	router.GET("/product/:id", h.GetProduct)
-}
-
 func (h *ProductHandler) ListProducts(c *gin.Context) {
 	products, err := h.service.ListProducts(c.Request.Context())
 	if err != nil {

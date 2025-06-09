@@ -9,12 +9,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 
 	"oolio-backend-challenge/internal/handler"
 	"oolio-backend-challenge/internal/repository/postgres"
+	"oolio-backend-challenge/internal/router"
 	"oolio-backend-challenge/internal/service"
 )
 
@@ -41,13 +41,11 @@ func main() {
 	orderHandler := handler.NewOrderHandler(orderService)
 	promoHandler := handler.NewPromoHandler(promoService)
 
-	// Initialize router
-	router := gin.Default()
-
-	// Register routes
-	productHandler.RegisterRoutes(router)
-	orderHandler.RegisterRoutes(router)
-	promoHandler.RegisterRoutes(router)
+	// Initialize and setup router
+	r := router.New()
+	r.RegisterProductRoutes(productHandler)
+	r.RegisterOrderRoutes(orderHandler)
+	r.RegisterPromoRoutes(promoHandler)
 
 	// Get port from environment variable or default to 8080
 	port := os.Getenv("PORT")
@@ -58,7 +56,7 @@ func main() {
 	// Create server with timeouts
 	srv := &http.Server{
 		Addr:         ":" + port,
-		Handler:      router,
+		Handler:      r.Engine(),
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
 		IdleTimeout:  60 * time.Second,

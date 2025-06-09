@@ -16,20 +16,10 @@ func NewPromoHandler(service domain.PromoCodeService) *PromoHandler {
 	return &PromoHandler{service: service}
 }
 
-func (h *PromoHandler) RegisterRoutes(router *gin.Engine) {
-	router.GET("/validate-promo/:code", h.ValidatePromoCode)
-}
-
 func (h *PromoHandler) ValidatePromoCode(c *gin.Context) {
 	code := c.Param("code")
 	if code == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "promo code is required"})
-		return
-	}
-
-	apiKey := c.GetHeader("api_key")
-	if apiKey != "apitest" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid API key"})
 		return
 	}
 
